@@ -35,7 +35,7 @@ class CacheFactory extends BaseObject
      */
     public function instantiate(): CacheInterface
     {
-        if (!$this->getEnv("REDIS_HOSTNAME")) {
+        if ($this->getEnv("REDIS_HOSTNAME") === false) {
 
             /** @var \yii\redis\Cache $cache */
             $cache = $this->container->get(\yii\redis\Cache::class, [
@@ -53,6 +53,10 @@ class CacheFactory extends BaseObject
         return $this->container->get(FileCache::class);
     }
 
+    /**
+     * @param string $key
+     * @return false|string
+     */
     protected function getEnv(string $key)
     {
         return getenv($this->keyPrefix . $key);
