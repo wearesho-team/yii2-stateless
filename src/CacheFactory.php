@@ -35,7 +35,7 @@ class CacheFactory extends BaseObject
      */
     public function instantiate(): CacheInterface
     {
-        if ($this->getEnv("REDIS_HOSTNAME") === false) {
+        if ($this->getEnv("REDIS_HOSTNAME") !== false) {
 
             /** @var \yii\redis\Cache $cache */
             $cache = $this->container->get(\yii\redis\Cache::class, [
