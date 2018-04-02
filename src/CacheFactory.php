@@ -38,7 +38,7 @@ class CacheFactory extends BaseObject
         if ($this->getEnv("REDIS_HOSTNAME") !== false) {
 
             /** @var \yii\redis\Cache $cache */
-            $cache = $this->container->get(\yii\redis\Cache::class, [
+            $cache = $this->container->get(\yii\redis\Cache::class, [], [
                 'redis' => [
                     'class' => \yii\redis\Connection::class,
                     'hostname' => $this->getEnv("REDIS_HOSTNAME"),
