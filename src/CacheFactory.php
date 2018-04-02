@@ -43,7 +43,7 @@ class CacheFactory extends BaseObject
                     'class' => \yii\redis\Connection::class,
                     'hostname' => $this->getEnv("REDIS_HOSTNAME"),
                     'database' => $this->getEnv("REDIS_DATABASE"),
-                    'password' => $this->getEnv("REDIS_PASSWORD"),
+                    'password' => $this->getEnv("REDIS_PASSWORD") ?: null,
                     'port' => $this->getEnv("REDIS_PORT"),
                 ],
             ]);
