@@ -1,32 +1,40 @@
-# Yii2 Cache Factory
-This package provides single class `Wearesho\Yii\Cache` with method `instantiate`
-that returns `\yii\caching\CacheInterface` instance.
+# Yii2 Stateless factory
+This package provides single class `Wearesho\Yii\Stateless\Factory` with:
+- `getRedis` - returns Redis connection or null, depends on environment configuration
+- `getSession` - return `\yii\web\Session` or `\yii\redis\Session`, if Redis available
+- `getCache` - returns `\yii\caching\FileCache` or `\yii\redis\Cache`, if Redis available
 
-It will return `\yii\redis\Cache` if environment variables provided:
+Environment variables to make redis available:
 
-- REDIS_HOSTNAME
-- REDIS_DATABASE
-- REDIS_PASSWORD
-- REDIS_PORT
+- **REDIS_HOSTNAME** - required
+- **REDIS_DATABASE** - required
+- **REDIS_PASSWORD** - default empty
+- **REDIS_PORT** - default 6379
 
 If no environment variable provided `\yii\caching\FileCache` will be instantiated.
 
 
 ## Installation
-`composer require wearesho-team/yii-cache-factory`
+`composer require wearesho-team/yii-stateless`
 
 ## Usage
 ```php
 <?php
 // your bootstrap.php file
 
+use Wearesho\Yii\Stateless\Factory;
+
+\Yii::$container->setSingleton(Factory::class);
+$factory = \Yii::$container->get(Factory::class);
+
 \Yii::$container->set(
     \yii\caching\CacheInterface::class,
-    function(): \yii\caching\CacheInterface {
-        /** @var \Wearesho\Yii\Cache\CacheFactory $factory */
-        $factory = \Yii::$container->get(\Wearesho\Yii\Cache\CacheFactory::class);
-        return $factory->instantiate();
-    }
+    [$factory, 'getCache',]
+);
+
+\Yii::$container->set(
+    \yii\web\Session::class,
+    [$factory, 'getSession',]
 );
 ```
 
@@ -36,11 +44,11 @@ If no environment variable provided `\yii\caching\FileCache` will be instantiate
 
 return [
     'components' => [
-        'cache' => \yii\caching\CacheInterface::class,    
+        'cache' => \yii\caching\CacheInterface::class, 
+        'redis' => \Yii::$container->get(Factory::class)->getRedis(),   
     ],
 ];
 ```
 
 ## License
-Proprietary. Contact [Wearesho Team](https://wearesho.com) for usage.  
-Part of [Bobra Credit System](https://bobra.io) 
+MIT

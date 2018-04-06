@@ -1,8 +1,8 @@
 {
-  "name": "wearesho-team/yii-cache-factory",
-  "description": "CacheInterface factory for Yii2",
+  "name": "wearesho-team/yii2-stateless",
+  "description": "Stateless components factory for Yii2",
   "type": "library",
-  "license": "propriertary",
+  "license": "MIT",
   "authors": [
     {
       "name": "Alexander Letnikow",
@@ -17,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Wearesho\\Yii\\Cache\\": "src/"
+      "Wearesho\\Yii\\Stateless\\": "src/"
     }
   }
 }
