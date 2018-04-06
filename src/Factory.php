@@ -46,26 +46,26 @@ class Factory
         ]);
     }
 
-    public function getCache(): CacheInterface
+    public function getCache(Container $container, array $params, array $config): CacheInterface
     {
         if ($this->getRedis() === null) {
-            return $this->container->get(FileCache::class);
+            return $this->container->get(FileCache::class, $params, $config);
         }
 
-        return $this->container->get(\yii\redis\Cache::class, [], [
-            'redis' => $this->getRedis(),
-        ]);
+        return $this->container->get(\yii\redis\Cache::class, $params, $config + [
+                'redis' => $this->getRedis(),
+            ]);
     }
 
-    public function getSession(): Session
+    public function getSession(Container $container, array $params, array $config): Session
     {
         if ($this->getRedis() === null) {
-            return $this->container->get(Session::class);
+            return $this->container->get(Session::class, $params, $config);
         }
 
-        return $this->container->get(\yii\redis\Session::class, [], [
-            'redis' => $this->getRedis(),
-        ]);
+        return $this->container->get(\yii\redis\Session::class, $params, $config + [
+                'redis' => $this->getRedis(),
+            ]);
     }
 
     /**
