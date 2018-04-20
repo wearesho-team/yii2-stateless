@@ -32,6 +32,7 @@ Environment variables to instantiate database:
 - **DB_TYPE** - type of database (default *pgsql*)
 - **DB_PASSWORD** - database user password (default *null*)
 
+**You can copy [.env.example](./.env.example) to your project**
 
 ## Installation
 `composer require wearesho-team/yii-stateless:^3.0`
