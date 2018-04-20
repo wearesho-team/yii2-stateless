@@ -46,6 +46,13 @@ class Configurator
             );
         }
 
+        if (!$container->has(Stateless\Redis\ConfigInterface::class)) {
+            $container->setSingleton(
+                Stateless\Redis\ConfigInterface::class,
+                Stateless\Request\EnvironmentConfig::class
+            );
+        }
+
         $container->setSingleton(
             caching\CacheInterface::class,
             [$factory, 'getCache']
