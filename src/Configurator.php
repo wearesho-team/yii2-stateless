@@ -41,7 +41,7 @@ class Configurator
 
         if (!$container->has(Stateless\Redis\ConfigInterface::class)) {
             $container->setSingleton(
-                Stateless\Db\ConfigInterface::class,
+                Stateless\Redis\ConfigInterface::class,
                 Stateless\Redis\EnvironmentConfig::class
             );
         }
