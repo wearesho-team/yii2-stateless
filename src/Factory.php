@@ -37,7 +37,7 @@ class Factory
             return null;
         }
 
-        return new redis\Connection([
+        return $this->redis = new redis\Connection([
             'hostname' => $config->getHostName(),
             'database' => $config->getDataBase(),
             'password' => $config->getPassword(),
