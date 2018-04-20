@@ -52,7 +52,7 @@ class Factory
             ]);
     }
 
-    public function getSession(di\Container $container, array $params, array $config): web\Session
+    public function getSession(di\Container $container, array $params = [], array $config = []): web\Session
     {
         if ($this->getRedis($container) === null) {
             return new web\Session($config);
@@ -60,6 +60,15 @@ class Factory
 
         return new redis\Session($config + [
                 'redis' => $this->getRedis($container),
+            ]);
+    }
+
+    public function getWebRequest(di\Container $container, array $params = [], array $config = []): web\Request
+    {
+        /** @var Stateless\Request\ConfigInterface $statelessConfig */
+        $statelessConfig = $container->get(Stateless\Request\ConfigInterface::class);
+        return new web\Request($config + [
+                'cookieValidationKey' => $statelessConfig->getCookieValidationKey(),
             ]);
     }
 
@@ -72,7 +81,7 @@ class Factory
      * @throws di\NotInstantiableException
      * @throws MissingEnvironmentException
      */
-    public function getDb(di\Container $container, array $params, array $config): db\Connection
+    public function getDb(di\Container $container, array $params = [], array $config = []): db\Connection
     {
         /** @var Stateless\Db\ConfigInterface $statelessConfig */
         $statelessConfig = $container->get(Stateless\Db\ConfigInterface::class);

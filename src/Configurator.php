@@ -62,6 +62,10 @@ class Configurator
             redis\Connection::class,
             [$factory, 'getRedis']
         );
+        $container->setSingleton(
+            web\Request::class,
+            [$factory, 'getWebRequest']
+        );
     }
 
     /**
