@@ -37,7 +37,7 @@ class EnvironmentConfig extends Environment\Config implements ConfigInterface
      */
     public function getDataBase(): int
     {
-        return $this->getEnv("REDIS_DATABASE");
+        return $this->getEnv("REDIS_DATABASE", 1);
     }
 
     public function getPassword(): ?string
