@@ -46,19 +46,19 @@ class Configurator
             );
         }
 
-        $container->set(
+        $container->setSingleton(
             caching\CacheInterface::class,
             [$factory, 'getCache']
         );
-        $container->set(
+        $container->setSingleton(
             db\Connection::class,
             [$factory, 'getDb']
         );
-        $container->set(
+        $container->setSingleton(
             web\Session::class,
             [$factory, 'getSession']
         );
-        $container->set(
+        $container->setSingleton(
             redis\Connection::class,
             [$factory, 'getRedis']
         );

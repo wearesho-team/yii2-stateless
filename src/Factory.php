@@ -8,7 +8,7 @@ use yii\caching\FileCache;
 use yii\di;
 use yii\db;
 use yii\redis;
-use yii\web\Session;
+use yii\web;
 use Wearesho\Yii\Stateless;
 
 /**
@@ -33,7 +33,7 @@ class Factory
             return null;
         }
 
-        return $container->get(redis\Connection::class, [], [
+        return new redis\Connection([
             'hostname' => $config->getHostName(),
             'database' => $config->getDataBase(),
             'password' => $config->getPassword(),
@@ -44,21 +44,21 @@ class Factory
     public function getCache(di\Container $container, array $params, array $config): CacheInterface
     {
         if ($this->getRedis($container) === null) {
-            return $container->get(FileCache::class, $params, $config);
+            return new FileCache($config);
         }
 
-        return $container->get(\yii\redis\Cache::class, $params, $config + [
+        return new redis\Cache($config + [
                 'redis' => $this->getRedis($container),
             ]);
     }
 
-    public function getSession(di\Container $container, array $params, array $config): Session
+    public function getSession(di\Container $container, array $params, array $config): web\Session
     {
         if ($this->getRedis($container) === null) {
-            return $container->get(Session::class, $params, $config);
+            return new web\Session($config);
         }
 
-        return $container->get(\yii\redis\Session::class, $params, $config + [
+        return new redis\Session($config + [
                 'redis' => $this->getRedis($container),
             ]);
     }
@@ -83,7 +83,7 @@ class Factory
 
         $dsn = "pgsql:host={$host};dbname={$db};port={$port}";
 
-        return $container->get(db\Connection::class, $params, array_merge([
+        return new db\Connection(array_merge([
             'dsn' => $dsn,
             'username' => $statelessConfig->getUserName(),
             'password' => $statelessConfig->getPassword(),
