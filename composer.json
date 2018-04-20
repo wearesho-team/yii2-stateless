@@ -12,9 +12,9 @@
   "minimum-stability": "stable",
   "require": {
     "php": ">=7.2.0",
+    "horat1us/environment-config": "^1.2.1",
     "yiisoft/yii2": "^2.0.14",
-    "yiisoft/yii2-redis": "~2.0",
-    "horat1us/environment-config": "^1.1"
+    "yiisoft/yii2-redis": "~2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^7.1",

@@ -42,7 +42,7 @@ class EnvironmentConfig extends Environment\Config implements ConfigInterface
 
     public function getPassword(): ?string
     {
-        return $this->getEnv("REDIS_PASSWORD", null);
+        return $this->getEnv("REDIS_PASSWORD", [$this, "null"]);
     }
 
     public function getPort(): int
