@@ -33,6 +33,10 @@ class Factory
             return null;
         }
 
+        if (!$config->isAvailable()) {
+            return null;
+        }
+
         return new redis\Connection([
             'hostname' => $config->getHostName(),
             'database' => $config->getDataBase(),

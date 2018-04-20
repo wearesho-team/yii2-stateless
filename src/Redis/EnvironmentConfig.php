@@ -14,7 +14,6 @@ class EnvironmentConfig extends Environment\Config implements ConfigInterface
     {
         try {
             $this->getHostName();
-            $this->getDataBase();
         } catch (Environment\MissingEnvironmentException $exception) {
             return false;
         }
