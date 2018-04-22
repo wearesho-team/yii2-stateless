@@ -4,11 +4,10 @@ namespace Wearesho\Yii\Stateless\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Wearesho\Yii\Stateless;
-
+use yii\caching;
+use yii\db;
 use yii\di;
 use yii\redis;
-use yii\db;
-use yii\caching;
 use yii\web;
 
 /**
@@ -94,6 +93,45 @@ class ConfiguratorTest extends TestCase
                 ]
             ],
             $config
+        );
+    }
+
+    public function testConfigure()
+    {
+        $this->assertEquals(
+            new di\Container(),
+            $this->container
+        );
+
+        Stateless\Configurator::configure($this->container);
+
+        $this->assertTrue(
+            $this->container->hasSingleton("Wearesho\Yii\Stateless\Factory")
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton("Wearesho\Yii\Stateless\Db\ConfigInterface")
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton("Wearesho\Yii\Stateless\Redis\ConfigInterface")
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton("Wearesho\Yii\Stateless\Request\ConfigInterface")
+        );
+
+        $this->assertTrue(
+            $this->container->hasSingleton(caching\CacheInterface::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(db\Connection::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(web\Session::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(redis\Connection::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(web\Request::class)
         );
     }
 }
