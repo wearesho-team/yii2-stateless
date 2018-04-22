@@ -2,9 +2,11 @@
 
 namespace Wearesho\Yii\Stateless\Tests;
 
+use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase;
 use Wearesho\Yii\Stateless;
 use yii\caching\FileCache;
+use yii\db;
 use yii\di;
 use yii\redis;
 
@@ -14,6 +16,8 @@ use yii\redis;
  */
 class FactoryTest extends TestCase
 {
+    use PHPMock;
+
     /** @var Stateless\Factory */
     protected $factory;
 
@@ -25,6 +29,146 @@ class FactoryTest extends TestCase
         parent::setUp();
         $this->factory = new Stateless\Factory();
         $this->container = new di\Container();
+    }
+
+    protected function appConfig(): array
+    {
+        return [
+            'name' => 'some_name'
+        ];
+    }
+
+
+    public function testGetSession()
+    {
+        \Yii::$app = new \yii\web\Application([
+            'basePath' => __DIR__,
+            'id' => "some_id"
+        ]);
+
+        $this->getFunctionMock('yii\web', 'session_name')
+            ->expects($this->any())->willReturn("session_name1");
+
+        $this->assertEquals(
+            new \yii\web\Session([]),
+            $this->factory->getSession($this->container, [], [
+                'name' => "somename2"
+            ])
+        );
+
+        $config = new class implements Stateless\Redis\ConfigInterface
+        {
+            public function isAvailable(): bool
+            {
+                return true;
+            }
+
+            /**
+             * @return string
+             * @throws Environment\MissingEnvironmentException
+             */
+            public function getHostName(): string
+            {
+                return "sad";
+            }
+
+            /**
+             * @return int
+             * @throws Environment\MissingEnvironmentException
+             */
+            public function getDataBase(): int
+            {
+                return 0;
+            }
+
+            public function getPassword(): ?string
+            {
+                return null;
+            }
+
+            public function getPort(): int
+            {
+                return 0;
+            }
+        };
+
+        $this->container->set(
+            Stateless\Redis\ConfigInterface::class,
+            $config
+        );
+
+        $this->assertEquals(
+            new \yii\redis\Session([
+                'redis' => new redis\Connection([
+                    'hostname' => 'sad',
+                    'port' => 0
+                ])
+            ]),
+            $this->factory->getSession($this->container, [], [
+                'name' => "somename3"
+            ])
+        );
+    }
+
+
+    public function testGetDb(): void
+    {
+        $config = new class implements Stateless\Redis\ConfigInterface
+        {
+
+            public function isAvailable(): bool
+            {
+                return false;
+            }
+
+            /**
+             * @return string
+             * @throws Environment\MissingEnvironmentException
+             */
+            public function getHostName(): string
+            {
+                return "";
+            }
+
+            /**
+             * @return int
+             * @throws Environment\MissingEnvironmentException
+             */
+            public function getDataBase(): int
+            {
+                return 228;
+            }
+
+            public function getPassword(): ?string
+            {
+                return null;
+            }
+
+            public function getPort(): int
+            {
+                return 1488;
+            }
+
+            public function getUserName(): string
+            {
+                return "takeusername";
+            }
+        };
+
+        $this->container->set(
+            Stateless\Db\ConfigInterface::class,
+            $config
+        );
+
+        $this->assertEquals(
+            new db\Connection(
+                [
+                    'dsn' => 'pgsql:host=;dbname=228;port=1488',
+                    'username' => 'takeusername'
+                ]
+            ),
+            $this->factory->getDb($this->container)
+        );
     }
 
     public function testInstantiateRequest(): void
@@ -91,7 +235,8 @@ class FactoryTest extends TestCase
             }
         };
 
-        $this->container->set(Stateless\Redis\ConfigInterface::class,
+        $this->container->set(
+            Stateless\Redis\ConfigInterface::class,
             $config
         );
 
@@ -138,11 +283,10 @@ class FactoryTest extends TestCase
             }
         };
 
-        $this->container->set(Stateless\Redis\ConfigInterface::class,
+        $this->container->set(
+            Stateless\Redis\ConfigInterface::class,
             $config
         );
-
-        $array = $this->factory->getRedis($this->container);
 
         $this->assertEquals(
             new redis\Connection([
@@ -406,7 +550,8 @@ class FactoryTest extends TestCase
             }
         };
 
-        $this->container->set(Stateless\Redis\ConfigInterface::class,
+        $this->container->set(
+            Stateless\Redis\ConfigInterface::class,
             $config
         );
 
@@ -419,62 +564,6 @@ class FactoryTest extends TestCase
             ]),
             $this->factory->getCache($this->container, [], [
 
-            ])
-        );
-    }
-
-    public function testGetSession()
-    {
-        $this->assertEquals(
-            new \yii\web\Session,
-            $this->factory->getSession($this->container)
-        );
-
-        $config = new class implements Stateless\Redis\ConfigInterface
-        {
-            public function isAvailable(): bool
-            {
-                return true;
-            }
-
-            /**
-             * @return string
-             * @throws Environment\MissingEnvironmentException
-             */
-            public function getHostName(): string
-            {
-                return "";
-            }
-
-            /**
-             * @return int
-             * @throws Environment\MissingEnvironmentException
-             */
-            public function getDataBase(): int
-            {
-                return 0;
-            }
-
-            public function getPassword(): ?string
-            {
-                return null;
-            }
-
-            public function getPort(): int
-            {
-                return 0;
-            }
-        };
-
-        $this->container->set(Stateless\Redis\ConfigInterface::class,
-            $config
-        );
-
-        $this->assertEquals(
-            new \yii\web\Session([
-            ]),
-            $this->factory->getSession($this->container,[],[
-                    "redis" => new redis\Connection()
             ])
         );
     }
