@@ -94,7 +94,7 @@ class Factory
         $db = $statelessConfig->getDataBase();
         $port = $statelessConfig->getPort();
 
-        $dsn = "pgsql:host={$host};dbname={$db};port={$port}";
+        $dsn = $statelessConfig->getType() . ":host={$host};dbname={$db};port={$port}";
 
         return new db\Connection(array_merge([
             'dsn' => $dsn,
