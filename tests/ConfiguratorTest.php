@@ -60,7 +60,6 @@ class ConfiguratorTest extends TestCase
 
     public function testConfigWithRedis(): void
     {
-
         $this->container->setSingleton(
             Stateless\Factory::class,
             new class extends Stateless\Factory
@@ -98,24 +97,29 @@ class ConfiguratorTest extends TestCase
 
     public function testConfigure()
     {
-        $this->assertEquals(
-            new di\Container(),
-            $this->container
+        $this->assertFalse(
+            $this->container->hasSingleton(Stateless\Factory::class)
+        );
+        $this->assertFalse(
+            $this->container->hasSingleton(db\Connection::class)
+        );
+        $this->assertFalse(
+            $this->container->hasSingleton(web\Session::class)
         );
 
         Stateless\Configurator::configure($this->container);
 
         $this->assertTrue(
-            $this->container->hasSingleton("Wearesho\Yii\Stateless\Factory")
+            $this->container->hasSingleton(Stateless\Factory::class)
         );
         $this->assertTrue(
-            $this->container->hasSingleton("Wearesho\Yii\Stateless\Db\ConfigInterface")
+            $this->container->hasSingleton(Stateless\Db\ConfigInterface::class)
         );
         $this->assertTrue(
-            $this->container->hasSingleton("Wearesho\Yii\Stateless\Redis\ConfigInterface")
+            $this->container->hasSingleton(Stateless\Redis\ConfigInterface::class)
         );
         $this->assertTrue(
-            $this->container->hasSingleton("Wearesho\Yii\Stateless\Request\ConfigInterface")
+            $this->container->hasSingleton(Stateless\Request\ConfigInterface::class)
         );
 
         $this->assertTrue(
