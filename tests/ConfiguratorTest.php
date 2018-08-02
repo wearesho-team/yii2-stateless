@@ -4,11 +4,10 @@ namespace Wearesho\Yii\Stateless\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Wearesho\Yii\Stateless;
-
+use yii\caching;
+use yii\db;
 use yii\di;
 use yii\redis;
-use yii\db;
-use yii\caching;
 use yii\web;
 
 /**
@@ -61,7 +60,6 @@ class ConfiguratorTest extends TestCase
 
     public function testConfigWithRedis(): void
     {
-
         $this->container->setSingleton(
             Stateless\Factory::class,
             new class extends Stateless\Factory
@@ -94,6 +92,50 @@ class ConfiguratorTest extends TestCase
                 ]
             ],
             $config
+        );
+    }
+
+    public function testConfigure()
+    {
+        $this->assertFalse(
+            $this->container->hasSingleton(Stateless\Factory::class)
+        );
+        $this->assertFalse(
+            $this->container->hasSingleton(db\Connection::class)
+        );
+        $this->assertFalse(
+            $this->container->hasSingleton(web\Session::class)
+        );
+
+        Stateless\Configurator::configure($this->container);
+
+        $this->assertTrue(
+            $this->container->hasSingleton(Stateless\Factory::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(Stateless\Db\ConfigInterface::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(Stateless\Redis\ConfigInterface::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(Stateless\Request\ConfigInterface::class)
+        );
+
+        $this->assertTrue(
+            $this->container->hasSingleton(caching\CacheInterface::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(db\Connection::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(web\Session::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(redis\Connection::class)
+        );
+        $this->assertTrue(
+            $this->container->hasSingleton(web\Request::class)
         );
     }
 }
